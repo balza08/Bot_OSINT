@@ -8,6 +8,8 @@ import ipaddress
 import os
 import subprocess
 import threading
+from dotenv import load_dotenv
+load_dotenv()
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -31,7 +33,7 @@ async def ip_lookup_core(ip: str) -> str:
 
     # Output formattato
     msg = (
-        f"🔍 **RISULTATI IP LOOKUP**\n\n"
+        f"**RISULTATI IP LOOKUP**\n\n"
         f"• IP: {data.get('ip', 'N/D')}\n"
         f"• Città: {data.get('city', 'N/D')}\n"
         f"• Regione: {data.get('region', 'N/D')}\n"
