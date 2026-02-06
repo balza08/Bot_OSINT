@@ -60,6 +60,24 @@ def run_sherlock(username, callback):
     thread = threading.Thread(target=task)
     thread.start()
 
+# MODULO HOLEHE
+def run_holehe(email, callback):
+    def task():
+        try:
+            result = subprocess.run(
+                ["python", "-m", "holehe", email],
+                capture_output=True,
+                text=True
+            )
+            output = result.stdout if result.stdout else "Nessun risultato disponibile."
+        except Exception as e:
+            output = f"Errore durante l'esecuzione di Holehe: {e}"
+
+        callback(output)
+
+    thread = threading.Thread(target=task)
+    thread.start()
+
 # COMANDI BASE
 async def start(update, context):
     await update.message.reply_text(
@@ -108,7 +126,7 @@ async def menu_choice(update, context):
     elif query.data == "username":
         await query.edit_message_text("Inserisci lo username da cercare:")
     elif query.data == "email":
-        await query.edit_message_text("Inserisci l'email:")
+        await query.edit_message_text("Inserisci l'email da analizzare:")
     elif query.data == "dns":
         await query.edit_message_text("Inserisci il dominio:")
 
@@ -135,7 +153,16 @@ async def process_input(update, context):
         run_sherlock(user_input, send_result)
 
     elif choice == "email":
-        await update.message.reply_text(f"Sto analizzando email: {user_input}\n(qui colleghi Holehe)")
+        await update.message.reply_text(f"Avvio analisi email per: {user_input}")
+
+        def send_result(output):
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f"**Risultati analisi email:**\n\n{output}",
+                parse_mode="Markdown"
+            )
+
+        run_holehe(user_input, send_result)
 
     elif choice == "dns":
         await update.message.reply_text(f"Sto analizzando dominio: {user_input}\n(qui farai DNS lookup)")
