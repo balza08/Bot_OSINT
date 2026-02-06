@@ -42,6 +42,24 @@ async def ip_lookup_core(ip: str) -> str:
 
     return msg
 
+# MODULO SHERLOCK
+def run_sherlock(username, callback):
+    def task():
+        try:
+            result = subprocess.run(
+                ["python", "-m", "sherlock", username, "--print-found"],
+                capture_output=True,
+                text=True
+            )
+            output = result.stdout if result.stdout else "Nessun risultato trovato."
+        except Exception as e:
+            output = f"Errore durante l'esecuzione di Sherlock: {e}"
+
+        callback(output)
+
+    thread = threading.Thread(target=task)
+    thread.start()
+
 # COMANDI BASE
 async def start(update, context):
     await update.message.reply_text(
@@ -105,7 +123,16 @@ async def process_input(update, context):
         await update.message.reply_text(msg, parse_mode="Markdown")
 
     elif choice == "username":
-        await update.message.reply_text(f"Sto cercando username: {user_input}\n(qui colleghi Sherlock)")
+        await update.message.reply_text(f"Avvio ricerca Sherlock per: {user_input}")
+
+        def send_result(output):
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f"**Risultati Sherlock per {user_input}:**\n\n{output}",
+                parse_mode="Markdown"
+            )
+
+        run_sherlock(user_input, send_result)
 
     elif choice == "email":
         await update.message.reply_text(f"Sto analizzando email: {user_input}\n(qui colleghi Holehe)")
