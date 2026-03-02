@@ -2,6 +2,7 @@ import os
 import requests
 import socket
 import ipaddress
+import subprocess
 
 # ===============================
 # UTILS
@@ -64,12 +65,28 @@ def dns_lookup(domain: str) -> str:
 # USERNAME SCAN (placeholder)
 # ===============================
 
-def username_scan(username: str) -> str:
-    return (
-        "\n=== USERNAME SCAN ===\n"
-        f"Username: {username}\n"
-        "Modulo non attivo. Puoi collegare Sherlock qui.\n"
-    )
+def sherlock_scan(username: str) -> str:
+    try:
+        print("Avvio processo sherlock: ")
+
+        #comando per sherlock
+        result = subprocess.run( 
+            ["python3", "sherlock", username, "--print-found"], 
+            capture_output=True, 
+            text=True 
+        )
+
+        if result.returncode != 0:
+            return "Errore durante l'esecuzione di sherlock"
+        
+        output = result.returncode.strip()
+        if not output:
+            return "Nessun risultato trovato"
+        
+        return f"\n=== RISULTATI SHERLOCK ===\n{output}\n"
+    
+    except FileNotFoundError:
+        return "Impossibile collegarsi a scerclock"
 
 # ===============================
 # EMAIL SCAN (placeholder)
@@ -111,7 +128,7 @@ def menu():
 
         elif scelta == "3":
             username = input("Inserisci username: ")
-            print(username_scan(username))
+            print(sherlock_scan(username))
             input("\nPremi INVIO per continuare...")
 
         elif scelta == "4":
