@@ -26,14 +26,14 @@ def ip_lookup(ip: str) -> str:
     try:
         ipaddress.ip_address(ip)
     except ValueError:
-        return "❌ IP non valido."
+        return "IP non valido."
 
     try:
         r = requests.get(f"https://ipinfo.io/{ip}/json", timeout=5)
         r.raise_for_status()
         data = r.json()
     except Exception:
-        return "❌ Errore durante la richiesta all'API."
+        return "Errore durante la richiesta all'API."
 
     return (
         "\n=== RISULTATI IP LOOKUP ===\n"
@@ -58,7 +58,7 @@ def dns_lookup(domain: str) -> str:
             f"IP associato: {ip}\n"
         )
     except Exception:
-        return "❌ Errore nel DNS lookup."
+        return "Errore nel DNS lookup."
 
 # ===============================
 # USERNAME SCAN (placeholder)
@@ -124,7 +124,7 @@ def menu():
             break
 
         else:
-            print("❌ Scelta non valida.")
+            print("Scelta non valida.")
             input("Premi INVIO per continuare...")
 
 # ===============================
